@@ -1,12 +1,10 @@
 #include "logics/main.h"
 extern "C" {
-    #include "engine/system.h"
-    #include "engine/draw.h"
-    #include "engine/font.h"
+    #include "engine/kernel.h"
+    #include "engine/unit/font.h"
 };
 
-we_engine engine;
-we_font font;
+uiFont font;
 
 static int MAX_COUNT;
 float aspect;
@@ -24,41 +22,104 @@ float buffer[2*EMAX];
 
 point *a;
 
+int segment = 36;
+float *vertex;
+float *ver;
+
+void we_draw_vertex_init(int seg)
+{
+    int j = 0;
+    float i;
+
+    segment = seg;
+
+    vertex = (float *) weCalloc( 2*seg, sizeof(float) );
+    ver = (float *) weCalloc( 2*seg, sizeof(float) );
+
+    /* инициализируем массив для единичного круга */
+    for (i = 0; i <= 360.0f; i += (360.0f / segment)) {
+        vertex[j++] = cos(i*M_PI/180.0f);
+        vertex[j++] = sin(i*M_PI/180.0f);
+    }
+}
+
+void we_draw_alpha_circle3f(float x, float y, float r)
+{
+    /* подумать о надобности этой функции */
+    GLfloat color[4];
+    int i;
+
+    for (i = 0; i < 2*segment+2; i += 2) {
+        ver[i] = vertex[i] * r + x;
+        ver[i+1] = vertex[i+1] * r + y;
+    }
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+
+    /* рисуем первую окружность */
+    glVertexPointer(2, GL_FLOAT, 0, ver);
+    glDrawArrays(GL_POLYGON, 0, segment+1);
+
+    /* а теперь вторую (только контур) с прозрачностью */
+    glGetFloatv(GL_CURRENT_COLOR, color);
+    glColor4f(color[0], color[1], color[2], 0.5f);
+    glDrawArrays(GL_LINE_LOOP, 0, segment+1);
+    glColor4f(color[0], color[1], color[2], color[3]);
+
+    glDisableClientState(GL_VERTEX_ARRAY);
+}
 void init()
 {
     static int count = 0;
-
-    border = engine.proj.aspect - 2.0f;
-
+    
+    uiFontRasterBuild( &font, 10, 0, "Terminus" );
+    // border = engine.proj.aspect - 2.0f;
+	
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glBlendFunc(GL_SRC_ALPHA, GL_SRC_COLOR);
-    glEnable(GL_BLEND);
+	glEnable(GL_BLEND);
 
-    font.size = 14;
-    font.weight = WE_MEDIUM;
-    font.name = "terminus";
+    aspect = 58.0f;
+
+    /*
+	font.size = 14;
+	font.weight = WE_MEDIUM;
+	font.name = "terminus";
     we_font_build(&font);
-
+	
     aspect = engine.proj.aspect;
-    aspect -= 0.05f*aspect;
+	aspect -= 0.05f*aspect;
 
+    */
     we_draw_vertex_init(32);
 
     if (count < 1) {
-        phys_init(border, border, px, py);
+	    phys_init(border, border, px, py);
         MAX_COUNT = phys_count();
-        a = phys_point();
+    	a = phys_point();
     }
     count++;
 }
 
-void keyboard(int *keycode)
+void keyboard( unsigned int *map )
 {
+    if ( map['q'] || map[WE_KEY_ESCAPE] ) {
+        weKill();
+    }
+    if ( map[' '] ) {
+        p_pause = !p_pause;
+    }
+    if ( map['r'] ) {
+        phys_init(border, border, px, py);
+        MAX_COUNT = phys_count();
+        a = phys_point();
+    }
+    /*
     if (keycode[WE_Q] || keycode[WE_ESC])
         we_quit();
     if (keycode[WE_F1] || keycode[WE_F]) {
         we_window_mode(&engine);
-    	we_window_update(&engine);
+		we_window_update(&engine);
     }
     if (keycode[WE_SPACE])
         p_pause = !p_pause;
@@ -67,6 +128,7 @@ void keyboard(int *keycode)
         MAX_COUNT = phys_count();
         a = phys_point();
     }
+    */
 }
 
 void draw_graph()
@@ -104,63 +166,72 @@ void draw_graph()
 
 void render()
 {
-    glClear(GL_COLOR_BUFFER_BIT);
-    glLoadIdentity();
-    glTranslatef(0.0f, 0.0f, 0.0f);
-
-    fps = we_getfps();
-
+	glClear(GL_COLOR_BUFFER_BIT);
+	glLoadIdentity();
+	glTranslatef(0.0f, 0.0f, 0.0f);
+	
+	fps = weGetFps();
+    
     glLineWidth(1.1f);
     for (int i = 0; i < MAX_COUNT; i++) {
         glColor3f(a[i].c.r, a[i].c.g, a[i].c.b);
         we_draw_alpha_circle3f(a[i].pos.x, a[i].pos.y, a[i].radius);
     }
-
+        
     glDisable(GL_BLEND);
-
+    
     draw_graph();
-
-    glColor3f(1.0f, 1.0f, 1.0f);
-    we_font_printf(&font, -aspect, aspect - 0.03f*aspect, "N: %d", MAX_COUNT);
-    we_font_printf(&font, -aspect, aspect - 0.09f*aspect, "E: %.4f", phys_energy());
-    we_font_printf(&font, -aspect, -aspect, "FPS: %.1f", fps);
-
+    
+	glColor3f(1.0f, 1.0f, 1.0f);
+	uiFontPrintf(&font, -aspect, aspect - 0.03f*aspect, "N: %d", MAX_COUNT);
+	uiFontPrintf(&font, -aspect, aspect - 0.09f*aspect, "E: %.4f", phys_energy());
+    uiFontPrintf(&font, -aspect, -aspect, "FPS: %.1f", fps);
+    
     if (p_pause)
-        we_font_printf(&font, -aspect, aspect - 0.15f*aspect, "paused");
-
+        uiFontPrintf(&font, -aspect, aspect - 0.15f*aspect, "paused");
+        
     glEnable(GL_BLEND);
-
+        
     phys_do();
-
+    
     if (!p_pause)
         phys_move(dt);
+    
+    weSwapBuffers();
+}
 
-    we_opengl_swapbuffers();
+void resize(int width, int height )
+{
+    GLfloat param1 = (float) width / height;
+    GLfloat n = 60.0f;
+
+    glViewport(0, 0, width, height);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    if (width <= height)
+        glOrtho(-n, n, -n/param1, n/param1, n, -n);
+    else
+        glOrtho(-n * param1, n * param1, -n, n, n, -n);
+
+    gluPerspective( 0.0f, param1, 1.0f, 100.0f );
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 }
 
 int main(int argc, char *argv[])
-{
-    engine.name = "Moleculus";
-    engine.appclass = "ENGiNE";
-    engine.width = 500;
-    engine.height = 500;
-    engine.fullscreen = 0;
-    engine.argc = argc;
-    engine.argv = argv;
-    engine.max_fps = 60;
-    engine.proj.angle = 0.0f;
-    engine.proj.aspect = 60.0f;
-    engine.proj.zFar = 100.0f;
-    engine.proj.zNear = 1.0f;
-
-    we_init(init);
-    we_render(render);
-    we_keyboard(keyboard);
-    we_loop(&engine);
-
-    phys_free();
-    we_draw_vertex_free();
-    we_font_kill();
-
-    return 0;
+{	
+    weInit( argc, argv );
+    weInitWindow( 500, 500, 0 );
+    weInitOpenGL( 0 );
+    weCreateWindow( "Moleculus" );
+    weRenderFunc( render );
+    weResizeFunc( resize );
+    weKeyboardFunc( keyboard );
+    init();
+    weLoop();
+    phys_free();;
+    uiFontKill( &font );
+    weFree( ver );
+    weFree( vertex );
+	return 0;
 }

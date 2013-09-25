@@ -1,57 +1,44 @@
-#ifndef _ERROR_H
-#define _ERROR_H
+// 
+//    Programm:  Wrench Engine
+//        Type:  Header
+//      Module:  Error
+// Description:  Error handling system
+//
+
+#ifndef __KERNEL_ERROR__
+#define __KERNEL_ERROR__
 
 #include <stdio.h>
+#include <stdarg.h>
 #include <string.h>
 #include <stdlib.h>
 
-// прописать ошибки
-
 enum {
-	ERROR_NONE,
-// linux
-	ERROR_OPEN_DISPLAY,
-	ERROR_GLX_VERSION,
-	ERROR_GLX_SUPPORT,
-	ERROR_CHOOSE_VISUAL,
-	ERROR_DRAW_CONTEXT,
-// windows
-	ERROR_REGISTER_WINDOW,
-	ERROR_CREATE_WINDOW,
-	ERROR_CREATE_CONTEXT,
-	ERROR_GETDC_CONTEXT,
-	ERROR_CHOOSE_PIXELFORMAT,
-	ERROR_SET_PIXELFORMAT,
-	ERROR_MAKE_CONTEXT,
-	ERROR_CLEAR_CONTEXT,
-	ERROR_DELETE_CONTEXT,
-	ERROR_FULLSCR_MODE,
-// other
-	ERROR_LOAD_FONT,
-	ERROR_ALLOC_MEMORY
+    WE_ERROR_NONE,
+    WE_ERROR_ALLOC_MEMORY, 
+    
+    WE_ERROR_CLEAR_CONTEXT,
+    WE_ERROR_DELETE_CONTEXT,
+    WE_ERROR_REGISTER_WINDOW,
+    WE_ERROR_CREATE_WINDOW,
+    WE_ERROR_DC_CONTEXT,
+    WE_ERROR_CHOOSE_PIXELFORMAT,
+    WE_ERROR_SET_PIXELFORMAT,
+    WE_ERROR_CREATE_CONTEXT,
+    WE_ERROR_MAKE_CONTEXT,
+
+    WE_ERROR_DRAW_CONTEXT,
+    WE_ERROR_OPEN_DISPLAY,
+    WE_ERROR_GLX_SUPPORT,
+    WE_ERROR_GLX_VERSION,
+    WE_ERROR_CHOOSE_VISUAL
 };
 
-enum {
-	INFO_DOUBLE_BUFFER,
-	INFO_SINGLE_BUFFER
-};
-
-/* we_error_print: print engine error */
-void we_error_print(void);
-
-/* we_error_send: send error from system */
-void we_error_send(int error);
-
-/* we_error_get: get engine error */
-int we_error_get(void);
-
-/* we_info_print: print engine information */
-void we_info_print(void);
-
-/* we_info_send: send info from system */
-void we_info_send(int info);
-
-/* we_info_get: get engine information */
-int we_info_get(void);
+/* export function */
+void weSendError( const int error );
+int weGetError( void );
+char ** weGetErrorString( void );
+void wePrintError( void );
+void weModuleError( const char *fmt, ... );
 
 #endif

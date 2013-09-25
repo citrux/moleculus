@@ -4,6 +4,9 @@
 #include "vector.h"
 #include "physics.h"
 #include "configure.h"
+extern "C" {
+	#include "../engine/memory.h"
+}
 
 /* phys_init: функция инициализации физического движка */
 void phys_init(float xborder, float yborder, float px, float py);
@@ -28,12 +31,5 @@ void phys_border(float bx, float by);
 
 /* acceleration: функция установки типа ускорения */
 Vector2 acceleration(int i);
-
-/* функции для работы с оперативной памятью */
-extern "C" {
-	void *we_malloc(size_t size);
-	void we_free(void *ptr);
-	void *we_realloc(void *p, size_t size);
-}
 
 #endif

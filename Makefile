@@ -1,9 +1,10 @@
 PROG=bin/moleculus
 CC=g++
 ENGINE=$(PWD)/bin/libwrench-`uname -m`.so
-CFLAGS=-lGL -lm $(ENGINE)
+CFLAGS=-lGL -lGLU -lm $(ENGINE)
 LOGICS=logics
-SOURCES=moleculus.cpp $(LOGICS)/main.cpp $(LOGICS)/configure.cpp $(LOGICS)/physics.cpp
+SOURCES=moleculus.cpp $(LOGICS)/main.cpp $(LOGICS)/configure.cpp \
+	$(LOGICS)/physics.cpp $(LOGICS)/special.cpp
 
 OBJS := $(patsubst %.cpp, %.o, $(SOURCES))
 DEPS := $(patsubst %.o, %.d, $(OBJS))
