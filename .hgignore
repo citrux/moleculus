@@ -1,6 +1,0 @@
-syntax: glob
-*.d
-*.o
-*.txt
-*.bat
-moleculus
