@@ -7,7 +7,6 @@ int win_id = 0;
 static int MAX_COUNT;
 float aspect;
 float border;
-float fps;
 float px = -20.0f;
 float py = -10.0f;
 float dt = 1.0f / 60.0f;
@@ -25,6 +24,21 @@ int segment = 36;
 float *vertex;
 float *ver;
 
+float weGetFps( void )
+{
+	static int FrameCount = 0;
+	static float NewCount = 0.0f, LastCount = 0.0f, FpsRate = 0.0f;
+
+    NewCount = (float) glutGet( GLUT_ELAPSED_TIME );
+    if ( ( NewCount - LastCount ) > 1000 ) {
+        FpsRate = ( FrameCount * 1000 ) / ( NewCount - LastCount );
+        LastCount = NewCount;
+        FrameCount = 0;
+    }
+    FrameCount++;
+    return FpsRate;
+}
+
 void draw_string( float x, float y, const char *fmt, ... )
 {
 	va_list ap;
@@ -39,54 +53,49 @@ void draw_string( float x, float y, const char *fmt, ... )
 	}
 }
 
-void we_draw_vertex_init(int seg)
+void we_draw_vertex_init( int seg )
 {
     int j = 0;
     float i;
 
-    segment = seg;
-
     vertex = new float [2*seg];
-    ver = new float [2*seg];
-
     /* инициализируем массив для единичного круга */
-    for (i = 0; i <= 360.0f; i += (360.0f / segment)) {
+    for (i = 0; i <= 360.0f; i += (360.0f / seg)) {
         vertex[j++] = cos(i*M_PI/180.0f);
         vertex[j++] = sin(i*M_PI/180.0f);
     }
 }
 
-void we_draw_circle3f(float x, float y, float r)
+void we_draw_circle3f( float x, float y, float r )
 {
-    /* подумать о надобности этой функции */
-    GLfloat color[4];
-    int i;
-
-    for (i = 0; i < 2*segment+2; i += 2) {
-        ver[i] = vertex[i] * r + x;
-        ver[i+1] = vertex[i+1] * r + y;
-    }
-
-    glEnableClientState(GL_VERTEX_ARRAY);
-
-    /* рисуем первую окружность */
-    glVertexPointer(2, GL_FLOAT, 0, ver);
-    glDrawArrays(GL_POLYGON, 0, segment+1);
-
-    glDisableClientState(GL_VERTEX_ARRAY);
+	glLineWidth( r );
+    glPushMatrix();
+    glTranslatef( x, y, 0 );
+    glScalef( r, r, 0 );
+    glEnableClientState( GL_VERTEX_ARRAY );
+    glVertexPointer( 2, GL_FLOAT, 0, vertex );
+    glDrawArrays( GL_POLYGON, 0, segment );
+    glColor3f( 1.0f, 1.0f, 1.0f );
+    glDrawArrays( GL_LINE_STRIP, 0, segment-3 );
+    glDisableClientState( GL_VERTEX_ARRAY );
+    glPopMatrix();
 }
 
 void init()
 {
     static int count = 0;
 	
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+    glEnable( GL_LINE_SMOOTH );
+    glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+    glEnable( GL_BLEND );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
 	text = new char [64];
 
     aspect = 58.0f;
 
-    we_draw_vertex_init(32);
+    we_draw_vertex_init( 32 );
 
     if (count < 1) {
 	    phys_init(border, border, px, py);
@@ -125,13 +134,12 @@ void draw_graph()
         buffer[i+1] = aspect / 1.5f + 16.0f * energy[i] / max;
     }
 
-    glColor3f(1.0f, 1.0f, 1.0f);
-    glLineWidth(2.0f);
-
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(2, GL_FLOAT, 0, buffer);
-    glDrawArrays(GL_LINE_STRIP, 0, e_count / 2);
-    glDisableClientState(GL_VERTEX_ARRAY);
+    glLineWidth( 2.0f );
+    glColor3f( 1.0f, 1.0f, 1.0f );
+    glEnableClientState( GL_VERTEX_ARRAY );
+    glVertexPointer( 2, GL_FLOAT, 0, buffer );
+    glDrawArrays( GL_LINE_STRIP, 0, e_count / 2 );
+    glDisableClientState( GL_VERTEX_ARRAY );
 
     if (!p_pause) {
         if (e_count < EMAX)
@@ -146,22 +154,20 @@ void draw_graph()
 
 void render( void )
 {
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear( GL_COLOR_BUFFER_BIT );
 	glLoadIdentity();
-	glTranslatef(0.0f, 0.0f, 0.0f);
     
-    glLineWidth(1.1f);
     for (int i = 0; i < MAX_COUNT; i++) {
         glColor3f(a[i].c.r, a[i].c.g, a[i].c.b);
         we_draw_circle3f( a[i].pos.x, a[i].pos.y, a[i].radius );
     }
-    
+
     draw_graph();
     
     glColor3f( 1.0f, 1.0f, 1.0f );
-	glColor3f(1.0f, 1.0f, 1.0f);
 	draw_string( -aspect, aspect - 0.03f*aspect, "N: %d", MAX_COUNT );
 	draw_string( -aspect, aspect - 0.09f*aspect, "E: %.4f", phys_energy() );
+	draw_string( -aspect, -aspect, "FPS: %.1f", weGetFps() );
     
     if (p_pause) {
         draw_string( -aspect, aspect - 0.15f*aspect, "paused" );
