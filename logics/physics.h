@@ -3,11 +3,6 @@
 
 #include "vector.h"
 #include "special.h"
-/*
-extern "C" {
-	#include "../engine/draw.h"
-};
-*/
 
 typedef struct {
     Vector2 pos;                    // позиция

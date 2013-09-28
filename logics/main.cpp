@@ -18,9 +18,9 @@ void phys_init(float xborder, float yborder, float px, float py)
 	border_y = yborder;
 
     if (p != NULL)
-        p = (point *) weRealloc(p, config.max_count * sizeof(point));
+        p = (point *) realloc(p, config.max_count * sizeof(point));
     else
-   	    p = (point *) weMalloc(config.max_count * sizeof(point));
+    	p = (point *) malloc(config.max_count * sizeof(point));
     
 	for (int i = 0; i < config.max_count; i++) {
 		p[i].pos = Vector2(px, py);
@@ -49,7 +49,7 @@ void phys_init(float xborder, float yborder, float px, float py)
 
 void phys_free()
 {
-	weFree(p);
+	free( p );
 }
 
 void phys_do()

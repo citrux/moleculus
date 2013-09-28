@@ -1,10 +1,8 @@
+#include <stdarg.h>
+#include <GL/glut.h>
 #include "logics/main.h"
-extern "C" {
-    #include "engine/kernel.h"
-    #include "engine/unit/font.h"
-};
 
-uiFont font;
+int win_id = 0;
 
 static int MAX_COUNT;
 float aspect;
@@ -22,9 +20,24 @@ float buffer[2*EMAX];
 
 point *a;
 
+static char *text;
 int segment = 36;
 float *vertex;
 float *ver;
+
+void draw_string( float x, float y, const char *fmt, ... )
+{
+	va_list ap;
+
+	va_start( ap, fmt );
+    vsprintf( text, fmt, ap );
+    va_end( ap );
+
+	glRasterPos2f( x, y );
+	while ( *text ) {
+		glutBitmapCharacter( GLUT_BITMAP_HELVETICA_12, *text++ );
+	}
+}
 
 void we_draw_vertex_init(int seg)
 {
@@ -33,8 +46,8 @@ void we_draw_vertex_init(int seg)
 
     segment = seg;
 
-    vertex = (float *) weCalloc( 2*seg, sizeof(float) );
-    ver = (float *) weCalloc( 2*seg, sizeof(float) );
+    vertex = new float [2*seg];
+    ver = new float [2*seg];
 
     /* инициализируем массив для единичного круга */
     for (i = 0; i <= 360.0f; i += (360.0f / segment)) {
@@ -43,7 +56,7 @@ void we_draw_vertex_init(int seg)
     }
 }
 
-void we_draw_alpha_circle3f(float x, float y, float r)
+void we_draw_circle3f(float x, float y, float r)
 {
     /* подумать о надобности этой функции */
     GLfloat color[4];
@@ -60,37 +73,19 @@ void we_draw_alpha_circle3f(float x, float y, float r)
     glVertexPointer(2, GL_FLOAT, 0, ver);
     glDrawArrays(GL_POLYGON, 0, segment+1);
 
-    /* а теперь вторую (только контур) с прозрачностью */
-    glGetFloatv(GL_CURRENT_COLOR, color);
-    glColor4f(color[0], color[1], color[2], 0.5f);
-    glDrawArrays(GL_LINE_LOOP, 0, segment+1);
-    glColor4f(color[0], color[1], color[2], color[3]);
-
     glDisableClientState(GL_VERTEX_ARRAY);
 }
+
 void init()
 {
     static int count = 0;
-    
-    uiFontRasterBuild( &font, 10, 0, "Terminus" );
-    // border = engine.proj.aspect - 2.0f;
 	
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glBlendFunc(GL_SRC_ALPHA, GL_SRC_COLOR);
-	glEnable(GL_BLEND);
+
+	text = new char [64];
 
     aspect = 58.0f;
 
-    /*
-	font.size = 14;
-	font.weight = WE_MEDIUM;
-	font.name = "terminus";
-    we_font_build(&font);
-	
-    aspect = engine.proj.aspect;
-	aspect -= 0.05f*aspect;
-
-    */
     we_draw_vertex_init(32);
 
     if (count < 1) {
@@ -101,34 +96,19 @@ void init()
     count++;
 }
 
-void keyboard( unsigned int *map )
+void keyboard( unsigned char key, int x, int y )
 {
-    if ( map['q'] || map[WE_KEY_ESCAPE] ) {
-        weKill();
+    if ( key == 'q' ) {
+        glutDestroyWindow( win_id );
     }
-    if ( map[' '] ) {
+    else if ( key == ' ' ) {
         p_pause = !p_pause;
     }
-    if ( map['r'] ) {
+    else if ( key == 'r' ) {
         phys_init(border, border, px, py);
         MAX_COUNT = phys_count();
         a = phys_point();
     }
-    /*
-    if (keycode[WE_Q] || keycode[WE_ESC])
-        we_quit();
-    if (keycode[WE_F1] || keycode[WE_F]) {
-        we_window_mode(&engine);
-		we_window_update(&engine);
-    }
-    if (keycode[WE_SPACE])
-        p_pause = !p_pause;
-    if (keycode[WE_R]) {
-        phys_init(border, border, px, py);
-        MAX_COUNT = phys_count();
-        a = phys_point();
-    }
-    */
 }
 
 void draw_graph()
@@ -164,40 +144,41 @@ void draw_graph()
     }
 }
 
-void render()
+void render( void )
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 	glTranslatef(0.0f, 0.0f, 0.0f);
-	
-	fps = weGetFps();
     
     glLineWidth(1.1f);
     for (int i = 0; i < MAX_COUNT; i++) {
         glColor3f(a[i].c.r, a[i].c.g, a[i].c.b);
-        we_draw_alpha_circle3f(a[i].pos.x, a[i].pos.y, a[i].radius);
+        we_draw_circle3f( a[i].pos.x, a[i].pos.y, a[i].radius );
     }
-        
-    glDisable(GL_BLEND);
     
     draw_graph();
     
+    glColor3f( 1.0f, 1.0f, 1.0f );
 	glColor3f(1.0f, 1.0f, 1.0f);
-	uiFontPrintf(&font, -aspect, aspect - 0.03f*aspect, "N: %d", MAX_COUNT);
-	uiFontPrintf(&font, -aspect, aspect - 0.09f*aspect, "E: %.4f", phys_energy());
-    uiFontPrintf(&font, -aspect, -aspect, "FPS: %.1f", fps);
+	draw_string( -aspect, aspect - 0.03f*aspect, "N: %d", MAX_COUNT );
+	draw_string( -aspect, aspect - 0.09f*aspect, "E: %.4f", phys_energy() );
     
-    if (p_pause)
-        uiFontPrintf(&font, -aspect, aspect - 0.15f*aspect, "paused");
-        
-    glEnable(GL_BLEND);
+    if (p_pause) {
+        draw_string( -aspect, aspect - 0.15f*aspect, "paused" );
+    }
         
     phys_do();
     
     if (!p_pause)
         phys_move(dt);
     
-    weSwapBuffers();
+    glutSwapBuffers();
+}
+
+void redraw( int value )
+{
+	render();
+	glutTimerFunc( 30, redraw, 0 );
 }
 
 void resize(int width, int height )
@@ -220,18 +201,20 @@ void resize(int width, int height )
 
 int main(int argc, char *argv[])
 {	
-    weInit( argc, argv );
-    weInitWindow( 500, 500, 0 );
-    weInitOpenGL( 0 );
-    weCreateWindow( "Moleculus" );
-    weRenderFunc( render );
-    weResizeFunc( resize );
-    weKeyboardFunc( keyboard );
+    glutInit( &argc, argv );
+    glutInitWindowSize( 500, 500 );
+    glutInitWindowPosition( 100, 100 );
+    glutInitDisplayMode( GLUT_RGBA | GLUT_DOUBLE );
+    win_id = glutCreateWindow( "Moleculus" );
+    glutReshapeFunc( resize );
+    glutDisplayFunc( render );
+    glutKeyboardFunc( keyboard );
+    glutTimerFunc( 30, redraw, 0 );
     init();
-    weLoop();
-    phys_free();;
-    uiFontKill( &font );
-    weFree( ver );
-    weFree( vertex );
+    glutMainLoop();
+    phys_free();
+    delete [] text;
+    delete [] ver;
+    delete [] vertex;
 	return 0;
 }

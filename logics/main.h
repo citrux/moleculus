@@ -4,9 +4,6 @@
 #include "vector.h"
 #include "physics.h"
 #include "configure.h"
-extern "C" {
-	#include "../engine/memory.h"
-}
 
 /* phys_init: функция инициализации физического движка */
 void phys_init(float xborder, float yborder, float px, float py);
