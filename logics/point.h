@@ -13,8 +13,4 @@ typedef struct {
     float q;                        // заряд
 } point;
 
-typedef struct {
-	point *a, *b;
-} two_points;
-
 #endif
