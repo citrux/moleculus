@@ -1,5 +1,5 @@
-#ifndef _VEC_H
-#define _VEC_H
+#ifndef __VEC_H__
+#define __VEC_H__
 
 #include <math.h>
 
