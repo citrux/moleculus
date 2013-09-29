@@ -3,11 +3,14 @@ CC=g++
 LOGICS=logics
 SOURCES=moleculus.cpp $(LOGICS)/special.cpp $(LOGICS)/system.cpp \
 	$(LOGICS)/physics.cpp
+CFLAGS=-Wall -O3
 LDCONFIG=-std=c++11
 ifeq ($(shell uname -s),Linux)
-	CFLAGS=-lGL -lGLU -lglut -lm
+	CFLAGS+=-lGL -lGLU -lglut -lm
+	EXT=
 else
-	CFLAGS+=-lopengl32 -lglu32 -lglut32 -lm
+	CFLAGS+=-lopengl32 -lglu32 -lfreeglut -lm
+	EXT=.exe
 endif
 
 OBJS := $(patsubst %.cpp, %.o, $(SOURCES))
@@ -15,7 +18,7 @@ DEPS := $(patsubst %.o, %.d, $(OBJS))
 
 $(PROG): $(OBJS) $(DEPS)
 	$(CC) $(OBJS) -o $@ $(CFLAGS)
-	strip -s $(PROG)
+	strip -s $(PROG)$(EXT)
 
 %.o: %.cpp %.d
 	$(CC) $(LDCONFIG) -c $< -o $@
@@ -27,7 +30,7 @@ $(PROG): $(OBJS) $(DEPS)
 	@echo create $@
 	
 clean:
-	$(RM) $(PROG) $(OBJS) $(DEPS)
+	$(RM) $(PROG)$(EXT) $(OBJS) $(DEPS)
 	$(RM) *~
 	$(RM) config.txt
 

@@ -2,9 +2,9 @@
 
 Moleculus -- это попытка смоделировать поведение группы массивных объектов с учётом взаимодействия между ними.
 
-##В GNU/Linux системах:
+##Установка:
 
-    hg clone https://bitbucket.org/pInecrew/moleculus
+    git clone https://github.com/citrux/moleculus.git
     cd moleculus
     make
 
