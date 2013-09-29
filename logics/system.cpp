@@ -94,7 +94,6 @@ void System::SystemCollide( int i, int j )
 	Vector2 vi = p[i].vel, vj = p[j].vel;
 	Vector2 delta = p[i].pos - p[j].pos;
 	Vector2 n = delta.norm(); // для соударения -- вектор направления центров
-	two_points ps;
 
 	int before_contact = (vj - vi) * n > 0;
     int mass_exists = p[i].mass * p[j].mass > 0;      // наличие массы
