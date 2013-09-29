@@ -185,18 +185,6 @@ void System::SystemDraw( void )
 	}
 }
 
-/*
-void System::SystemUseCollision( two_points ( *param )( point, point ) )
-{
-
-}
-
-void System::SystemUseForce( Vector2 ( *param )( point, point ) )
-{
-
-}
-*/
-
 int System::getSystemCount( void )
 {
 	return max_count;

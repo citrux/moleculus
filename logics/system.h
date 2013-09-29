@@ -20,8 +20,6 @@ public:
 	void SystemCollide( int i, int j );
 	Vector2 SystemAcceleration( int i );
 	void SystemDraw( void );
-	// void SystemUseCollision( two_points ( *param )( point, point ) );
-	// void SystemUseForce( Vector2 ( *param )( point, point ) );
 	int getSystemCount( void );
 	float getSystemEnergy( void );
 	void setSystemCount( int count );
@@ -38,7 +36,7 @@ private:
     int borders = 1;
     float radius = 1.0f;
     float G = 10.0f, E = 10.0f;
-    point * p;
+    point * p = NULL;
 };
 
 #endif
