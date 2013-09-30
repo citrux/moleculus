@@ -34,7 +34,7 @@ private:
 	int max_count = 100;
 	int hit_type = 0;
     int borders = 1;
-    float radius = 1.0f;
+    float radius = 2.0f;
     float G = 10.0f, E = 10.0f;
     point * p = NULL;
 };
