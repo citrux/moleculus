@@ -25,6 +25,9 @@ void System::SystemInit( void )
 {
 	float px = -xborder, py = -yborder;
 
+	if ( p != NULL ) {
+		delete [] p;
+	}
 	p = new point [max_count];
 	for ( int i = 0; i < max_count; i++ ) {
 		p[i].pos = Vector2( px, py );

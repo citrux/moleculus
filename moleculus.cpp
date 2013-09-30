@@ -56,6 +56,20 @@ void program_resize( int width, int height )
 
 void program_keyboard( unsigned char key, int x, int y )
 {
+    static int fullscreen = 1;
+    if ( key == 'q' ) {
+        glutDestroyWindow( win_id );
+    } else if ( key == 'f' ) {
+        if ( fullscreen ) {
+            glutFullScreen();
+        } else {
+            glutReshapeWindow( 500, 500 );
+        }
+        fullscreen = !fullscreen;
+    } else if ( key == 'r' ) {
+        sys.SystemLoad( "config.txt" );
+        sys.SystemInit();
+    }  
     /* add code */
 }
 
