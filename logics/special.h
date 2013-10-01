@@ -2,6 +2,7 @@
 #define __SPECIAL_H__
 
 #include <cstdio>
+#include <cstdarg>
 #include <cmath>
 #include <GL/glut.h>
 
