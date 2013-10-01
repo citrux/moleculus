@@ -13,17 +13,17 @@ const float kf = 3.0f;
 class System {
 public:
 	~System();
-	void SystemInit( void );
-	void SystemLoad( const char *file );
-	void SystemDo( void );
-	void SystemMove( float dt );
-	void SystemCollide( int i, int j );
-	Vector2 SystemAcceleration( int i );
-	void SystemDraw( void );
-	int getSystemCount( void );
-	float getSystemEnergy( void );
-	void setSystemCount( int count );
-	void setSystemBorder( float x_border, float y_border );
+	void Init( void );
+	void Load( const char *file );
+	void Do( void );
+	void Move( float dt );
+	void Collide( int i, int j );
+	Vector2 Acceleration( int i );
+	void Draw( void );
+	int getCount( void );
+	float getEnergy( void );
+	void setCount( int count );
+	void setBorder( float x_border, float y_border );
 private:
 	float xborder = 55.0f, yborder = 55.0f;
 	int ext_interaction = 2;

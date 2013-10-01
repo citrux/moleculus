@@ -21,7 +21,7 @@ System::~System()
 	delete [] p;
 }
 
-void System::SystemInit( void )
+void System::Init( void )
 {
 	float px = -xborder, py = -yborder;
 
@@ -53,12 +53,12 @@ void System::SystemInit( void )
 	}
 }
 
-void System::SystemLoad( const char *file )
+void System::Load( const char *file )
 {
 	/* add a code */
 }
 
-void System::SystemDo( void )
+void System::Do( void )
 {
 	for ( int i = 0; i < max_count; i++ ) {
 		if ( borders ) {
@@ -77,21 +77,21 @@ void System::SystemDo( void )
 			}
 		}
 		for ( int j = i + 1; j < max_count; j++ ) {
-			SystemCollide( i, j );
+			Collide( i, j );
 		}
 	}
 }
 
-void System::SystemMove( float dt )
+void System::Move( float dt )
 {
 	for ( int i = 0; i < max_count; i++ ) {
 		p[i].pos += p[i].vel * dt + p[i].acc * dt*dt/2.0f;
         p[i].vel = p[i].vel + p[i].acc * dt;
-		p[i].acc = SystemAcceleration( i );
+		p[i].acc = Acceleration( i );
 	}
 }
 
-void System::SystemCollide( int i, int j )
+void System::Collide( int i, int j )
 {
 	float rad = p[i].radius + p[j].radius;
 	Vector2 vi = p[i].vel, vj = p[j].vel;
@@ -116,7 +116,7 @@ void System::SystemCollide( int i, int j )
 	}
 }
 
-Vector2 System::SystemAcceleration( int i )
+Vector2 System::Acceleration( int i )
 {
 	Vector2 gravity, elect, r, acc;
 
@@ -179,7 +179,7 @@ Vector2 System::SystemAcceleration( int i )
 	return acc;
 }
 
-void System::SystemDraw( void )
+void System::Draw( void )
 {
 	for ( int i = 0; i < max_count; i++ ) {
 		glColor3f( p[i].c.r, p[i].c.g, p[i].c.b );
@@ -187,12 +187,12 @@ void System::SystemDraw( void )
 	}
 }
 
-int System::getSystemCount( void )
+int System::getCount( void )
 {
 	return max_count;
 }
 
-float System::getSystemEnergy( void )
+float System::getEnergy( void )
 {
 	float ENERGY;
 	for ( int i = 0; i < max_count; i++ ) {
@@ -205,12 +205,12 @@ float System::getSystemEnergy( void )
 	return ENERGY / max_count;
 }
 
-void System::setSystemCount( int count )
+void System::setCount( int count )
 {
 	max_count = count;
 }
 
-void System::setSystemBorder( float x_border, float y_border )
+void System::setBorder( float x_border, float y_border )
 {
 	xborder = x_border;
 	yborder = y_border;

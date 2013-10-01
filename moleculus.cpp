@@ -13,19 +13,19 @@ void program_init( void )
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     spVertexInit( 32 );
-    sys.SystemInit();
+    sys.Init();
 }
 
 void program_render( void )
 {
 	glClear( GL_COLOR_BUFFER_BIT );
 	glLoadIdentity();
-    sys.SystemDo();
-    sys.SystemMove( 1.0 / 30.0f );
-    sys.SystemDraw();
+    sys.Do();
+    sys.Move( 1.0 / 30.0f );
+    sys.Draw();
     glColor3f( 1.0f, 1.0f, 1.0f );
-    spDrawString( -55.0f, 55.0f - 0.03f*55.0f, "N: %d", sys.getSystemCount() );
-    spDrawString( -55.0f, 55.0f - 0.09f*55.0f, "E: %.4f", sys.getSystemEnergy() );
+    spDrawString( -55.0f, 55.0f - 0.03f*55.0f, "N: %d", sys.getCount() );
+    spDrawString( -55.0f, 55.0f - 0.09f*55.0f, "E: %.4f", sys.getEnergy() );
     spDrawString( -55.0f, 55.0f - 0.15f*55.0f, "FPS: %.1f", spGetFps() );
 	glutSwapBuffers();
 }
@@ -67,8 +67,8 @@ void program_keyboard( unsigned char key, int x, int y )
         }
         fullscreen = !fullscreen;
     } else if ( key == 'r' ) {
-        sys.SystemLoad( "config.txt" );
-        sys.SystemInit();
+        sys.Load( "config.txt" );
+        sys.Init();
     }  
     /* add code */
 }
