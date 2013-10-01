@@ -2,6 +2,9 @@
 #define __SYSTEM_H__
 
 #include <iostream>
+#include <fstream>
+#include <cstring>
+#include <cstdlib>
 #include "vector.h"
 #include "special.h"
 #include "point.h"

@@ -13,6 +13,7 @@ void program_init( void )
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     spVertexInit( 32 );
+    sys.Load( "config.txt" );
     sys.Init();
 }
 

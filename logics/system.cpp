@@ -55,7 +55,83 @@ void System::Init( void )
 
 void System::Load( const char *file )
 {
-	/* add a code */
+	using std::cout;
+	using std::endl;
+	using std::ifstream;
+	using std::ofstream;
+	const int MAX_LINE = 256;
+	const int MAX_TOKEN = 4;
+	const char * const DELIMETER = " = ";
+	ifstream fr;
+	ofstream fw;
+
+	fr.open( file );
+	if ( fr.good() ) {
+		while ( !fr.eof() ) {
+			char buf[MAX_LINE];
+			fr.getline( buf, MAX_LINE );
+			if ( buf[0] == '#' ) {
+				continue;
+			}
+			int n = 0;
+			const char * token[MAX_TOKEN] = {};
+			token[0] = strtok( buf, DELIMETER );
+			if ( !token[0] ) {
+				continue;
+			} else  {
+				for ( n = 1; n < MAX_TOKEN; n++ ) {
+					token[n] = strtok( 0, DELIMETER );
+					if ( !token[n] ) {
+						break;
+					}
+				}
+				if ( !strcmp( "MAX_COUNT", token[0] ) ) {
+					max_count = atoi( token[1] );
+				} else if ( !strcmp( "RADIUS", token[0] ) ) {
+					radius = (float) atof( token[1] );
+				} else if ( !strcmp( "CHECK_ENERGY", token[0] ) ) {
+					check_energy = atoi( token[1] );
+				} else if ( !strcmp( "BORDERS", token[0] ) ) {
+					borders = atoi( token[1] );
+				} else if ( !strcmp( "INTERACTION", token[0] ) ) {
+					interaction = atoi( token[1] );
+				} else if ( !strcmp( "GRAVITY_DIM", token[0] ) ) {
+					gravity_dim = atoi( token[1] );
+				} else if ( !strcmp( "G", token[0] ) ) {
+					G = (float) atof( token[1] );
+				} else if ( !strcmp( "E", token[0] ) ) {
+					E = (float) atof( token[1] );
+				} else if ( !strcmp( "HIT_TYPE", token[0] ) ) {
+					hit_type = atoi( token[1] );
+				} else if ( !strcmp( "START_SPEED", token[0] ) ) {
+					start_speed = atoi( token[1] );
+				}
+			}
+		}
+		fr.close();
+	} else {
+		fw.open( file );
+		if ( !fw.good() ) {
+			cout << "[Error]: Can't create " << file << "!" << endl;
+		}
+		fw << "# количество шариков\n" << "MAX_COUNT = " << max_count << "\n\n";
+		fw << "# радиус шариков" << endl << "RADIUS = " << radius << "\n\n";
+		fw << "# вывод энергии [0/1]" << endl << "CHECK_ENERGY = " << check_energy << "\n\n";
+		fw << "# границы [0/1]" << endl << "BORDERS = " << borders << "\n\n";
+		fw << "# тип внешнего взаимодействия:\n# 0 - нет\n# 1 - центральное\n";
+		fw << "# 2 - гравитационное поле\n" << "EXT_INTERACTION = " << ext_interaction << "\n\n";
+		fw << "# тип взаимодействия:\n# 0 - нет\n# 1 - гравитация [между шариками]\n";
+		fw << "# 2 - электромагнитное взаимодействие [пока только Кулон]\n# 3 - 1 + 2\n";
+		fw << "INTERACTION = " << interaction << "\n\n";
+		fw << "# размерность пространства для Ньютоновской механики GRAVITY_DIM = 3\n";
+		fw << "GRAVITY_DIM = " << gravity_dim << "\n\n";
+		fw << "# гравитационная постоянная\nG = " << G << "\n\n";
+		fw << "# электрическая постоянная\nE = " << E << "\n\n";
+		fw << "# тип соудорения:\n# 0 - упруго\n# 1 - неупруго\n# 2 - слипание [жидкость]\n";
+		fw << "HIT_TYPE = " << hit_type << "\n\n";
+		fw << "# скорость при стартовом разлёте\n" << "START_SPEED = " << start_speed;
+		fw.close();
+	}
 }
 
 void System::Do( void )
