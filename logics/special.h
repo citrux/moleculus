@@ -1,9 +1,8 @@
 #ifndef __SPECIAL_H__
 #define __SPECIAL_H__
 
-#include <stdarg.h>
-#include <stdio.h>
-#include <math.h>
+#include <cstdio>
+#include <cmath>
 #include <GL/glut.h>
 
 #ifndef M_PI

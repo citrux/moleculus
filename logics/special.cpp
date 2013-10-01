@@ -1,6 +1,6 @@
 #include "special.h"
 
-static float * vertex;
+static float * vertex = NULL;
 static int segment_g = 16;
 
 float spGetFps( void )
