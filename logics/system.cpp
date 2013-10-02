@@ -241,6 +241,16 @@ Vector2 System::Acceleration( int i )
 
 void System::Draw( void )
 {
+    if ( borders_draw ) {
+        glColor3f( 0.0f, 1.0f, 0.0f );
+        glBegin( GL_LINE_STRIP );
+            glVertex2f( -xborder, yborder);
+            glVertex2f( -xborder, -yborder );
+            glVertex2f( xborder, -yborder);
+            glVertex2f( xborder, yborder );
+            glVertex2f( -xborder, yborder);
+        glEnd();
+    }
     for ( int i = 0; i < max_count; i++ ) {
         glColor3f( p[i].c.r, p[i].c.g, p[i].c.b );
         spDrawCircle3f( p[i].pos.x, p[i].pos.y, p[i].radius );
@@ -274,4 +284,9 @@ void System::setBorder( float x_border, float y_border )
 {
     xborder = x_border;
     yborder = y_border;
+}
+
+void System::checkBorderDraw( void )
+{
+    borders_draw = !borders_draw;
 }

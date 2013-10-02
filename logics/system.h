@@ -27,6 +27,7 @@ public:
     float getEnergy( void );
     void setCount( int count );
     void setBorder( float x_border, float y_border );
+    void checkBorderDraw( void );
 private:
     float xborder = 55.0f, yborder = 55.0f;
     int ext_interaction = 2;
@@ -37,6 +38,7 @@ private:
     int max_count = 100;
     int hit_type = 0;
     int borders = 1;
+    int borders_draw = 0;
     float radius = 2.0f;
     float G = 10.0f, E = 10.0f;
     point * p = NULL;

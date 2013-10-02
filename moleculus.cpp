@@ -4,6 +4,8 @@
 
 int win_id = 0;
 System sys;
+GLfloat n = 60.0f;
+GLfloat aspect;
 
 void program_init( void )
 {
@@ -12,7 +14,7 @@ void program_init( void )
     glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-    spVertexInit( 32 );
+    spVertexInit( 24 );
     sys.Load( "config.txt" );
     sys.Init();
 }
@@ -25,9 +27,9 @@ void program_render( void )
     sys.Move( 1.0 / 30.0f );
     sys.Draw();
     glColor3f( 1.0f, 1.0f, 1.0f );
-    spDrawString( -55.0f, 55.0f - 0.03f*55.0f, "N: %d", sys.getCount() );
-    spDrawString( -55.0f, 55.0f - 0.09f*55.0f, "E: %.4f", sys.getEnergy() );
-    spDrawString( -55.0f, 55.0f - 0.15f*55.0f, "FPS: %.1f", spGetFps() );
+    spDrawString( -n + 1.0f, n - 3.0f, "N: %d", sys.getCount() );
+    spDrawString( -n + 1.0f, n - 6.0f, "E: %.4f", sys.getEnergy() );
+    spDrawString( -n + 1.0f, n - 9.0f, "FPS: %.1f", spGetFps() );
     glutSwapBuffers();
 }
 
@@ -39,18 +41,15 @@ void program_redraw( int value )
 
 void program_resize( int width, int height )
 {
-    GLfloat param1 = (float) width / height;
-    GLfloat n = 60.0f;
-
+    aspect = (float) width / height;
     glViewport( 0, 0, width, height );
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
     if ( width <= height ) {
-        glOrtho( -n, n, -n/param1, n/param1, n, -n );
+        glOrtho( -n, n, -n/aspect, n/aspect, n, -n );
     } else {
-        glOrtho( -n * param1, n * param1, -n, n, n, -n );
+        glOrtho( -n * aspect, n * aspect, -n, n, n, -n );
     }
-    gluPerspective( 0.0f, param1, 1.0f, 100.0f );
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
@@ -70,6 +69,8 @@ void program_keyboard( unsigned char key, int x, int y )
     } else if ( key == 'r' ) {
         sys.Load( "config.txt" );
         sys.Init();
+    } else if ( key == 'b' ) {
+        sys.checkBorderDraw();
     }
 }
 
