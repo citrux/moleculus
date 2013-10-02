@@ -2,6 +2,8 @@
 #include "logics/special.h"
 #include "logics/system.h"
 
+int window_width = 500;
+int window_height = 500;
 int win_id = 0;
 System sys;
 GLfloat n = 60.0f;
@@ -63,7 +65,7 @@ void program_keyboard( unsigned char key, int x, int y )
         if ( fullscreen ) {
             glutFullScreen();
         } else {
-            glutReshapeWindow( 500, 500 );
+            glutReshapeWindow( window_width, window_height );
         }
         fullscreen = !fullscreen;
     } else if ( key == 'r' ) {
@@ -82,7 +84,7 @@ void program_free( void )
 int main( int argc, char *argv[] )
 {
     glutInit( &argc, argv );
-    glutInitWindowSize( 500, 500 );
+    glutInitWindowSize( window_width, window_height );
     glutInitWindowPosition( 100, 100 );
     glutInitDisplayMode( GLUT_RGBA | GLUT_DOUBLE );
     win_id = glutCreateWindow( "Moleculus" );
