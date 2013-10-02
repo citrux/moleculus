@@ -70,8 +70,7 @@ void program_keyboard( unsigned char key, int x, int y )
     } else if ( key == 'r' ) {
         sys.Load( "config.txt" );
         sys.Init();
-    }  
-    /* add code */
+    }
 }
 
 void program_free( void )
