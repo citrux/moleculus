@@ -11,10 +11,10 @@
 #endif
 
 typedef struct {
-	float r;
-	float g;
-	float b;
-	float a;
+    float r;
+    float g;
+    float b;
+    float a;
 } sp_color;
 
 float spGetFps( void );

@@ -7,7 +7,7 @@ System sys;
 
 void program_init( void )
 {
-	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+    glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
     glEnable( GL_LINE_SMOOTH );
     glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
     glEnable( GL_BLEND );
@@ -19,8 +19,8 @@ void program_init( void )
 
 void program_render( void )
 {
-	glClear( GL_COLOR_BUFFER_BIT );
-	glLoadIdentity();
+    glClear( GL_COLOR_BUFFER_BIT );
+    glLoadIdentity();
     sys.Do();
     sys.Move( 1.0 / 30.0f );
     sys.Draw();
@@ -28,18 +28,18 @@ void program_render( void )
     spDrawString( -55.0f, 55.0f - 0.03f*55.0f, "N: %d", sys.getCount() );
     spDrawString( -55.0f, 55.0f - 0.09f*55.0f, "E: %.4f", sys.getEnergy() );
     spDrawString( -55.0f, 55.0f - 0.15f*55.0f, "FPS: %.1f", spGetFps() );
-	glutSwapBuffers();
+    glutSwapBuffers();
 }
 
 void program_redraw( int value )
 {
-	program_render();
-	glutTimerFunc( 30, program_redraw, 0 );
+    program_render();
+    glutTimerFunc( 30, program_redraw, 0 );
 }
 
 void program_resize( int width, int height )
 {
-	GLfloat param1 = (float) width / height;
+    GLfloat param1 = (float) width / height;
     GLfloat n = 60.0f;
 
     glViewport( 0, 0, width, height );
@@ -75,12 +75,12 @@ void program_keyboard( unsigned char key, int x, int y )
 
 void program_free( void )
 {
-	spFree();
+    spFree();
 }
 
 int main( int argc, char *argv[] )
 {
-	glutInit( &argc, argv );
+    glutInit( &argc, argv );
     glutInitWindowSize( 500, 500 );
     glutInitWindowPosition( 100, 100 );
     glutInitDisplayMode( GLUT_RGBA | GLUT_DOUBLE );
