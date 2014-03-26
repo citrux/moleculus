@@ -38,10 +38,10 @@ void spVertexInit( int segment )
     int j = 0;
 
     segment_g = segment;
-    vertex = new float [2*(segment+2)];
-    for ( float i = 0; i <= 360.0f; i += ( 360.0f / segment ) ) {
-        vertex[j++] = cos( i * M_PI / 180.0f);
-        vertex[j++] = sin( i * M_PI / 180.0f);
+    vertex = new float [2*segment];
+    for ( float i = 0; i <= 180.0f; i += ( 180.0f / (segment-1) ) ) {
+        vertex[j++] = cos( 2*i*M_PI / 179.0f);
+        vertex[j++] = sin( 2*i*M_PI / 179.0f);
     }
     vertex[j++] = 1.0f;
     vertex[j++] = 0.0f;
@@ -49,15 +49,12 @@ void spVertexInit( int segment )
 
 void spDrawCircle3f( float x, float y, float r )
 {
-    glLineWidth( r );
     glPushMatrix();
     glTranslatef( x, y, 0 );
     glScalef( r, r, 0 );
     glEnableClientState( GL_VERTEX_ARRAY );
     glVertexPointer( 2, GL_FLOAT, 0, vertex );
     glDrawArrays( GL_POLYGON, 0, segment_g + 1 );
-    glColor3f( 1.0f, 1.0f, 1.0f );
-    glDrawArrays( GL_LINE_STRIP, 0, segment_g + 1 );
     glDisableClientState( GL_VERTEX_ARRAY );
     glPopMatrix();
 }
